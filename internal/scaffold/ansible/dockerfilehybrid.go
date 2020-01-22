@@ -63,7 +63,7 @@ ENV OPERATOR=/usr/local/bin/ansible-operator \
 # yum clean all && rm -rf /var/yum/cache/* first
 RUN yum clean all && rm -rf /var/cache/yum/* \
  && yum -y update \
- && yum install -y python36-devel gcc python3-pip python3-setuptools \
+ && yum install -y python36-devel gcc python3-pip python3-setuptools libffi-devel openssl-devel \
  # todo: remove inotify-tools. More info: See https://github.com/operator-framework/operator-sdk/issues/2007
  && yum install -y https://rpmfind.net/linux/fedora-secondary/releases/30/Everything/s390x/os/Packages/i/inotify-tools-3.14-16.fc30.s390x.rpm \
  && pip3 install --no-cache-dir --ignore-installed ipaddress \
@@ -72,7 +72,7 @@ RUN yum clean all && rm -rf /var/cache/yum/* \
       openshift==0.8.9 \
       ansible~=2.9 \
       jmespath \
- && yum remove -y gcc python36-devel \
+ && yum remove -y gcc python36-devel libffi-devel openssl-devel \
  && yum clean all \
  && rm -rf /var/cache/yum \
  && ansible-galaxy collection install operator_sdk.util
