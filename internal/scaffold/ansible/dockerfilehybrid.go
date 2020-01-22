@@ -87,7 +87,7 @@ RUN mkdir -p ${HOME}/.ansible/tmp \
  && chown -R ${USER_UID}:0 ${HOME} \
  && chmod -R ug+rwx ${HOME}
 
-ADD https://github.com/krallin/tini/releases/latest/download/tini /tini
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-s390x /tini
 RUN chmod +x /tini
 
 [[- if .Watches ]]
