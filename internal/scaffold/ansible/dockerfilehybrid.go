@@ -63,16 +63,16 @@ ENV OPERATOR=/usr/local/bin/ansible-operator \
 # yum clean all && rm -rf /var/yum/cache/* first
 RUN yum clean all && rm -rf /var/cache/yum/* \
  && yum -y update \
- && yum install -y python36-devel gcc python3-pip python3-setuptools \
+ && yum install -y python36-devel gcc python3-pip python3-setuptools libffi-devel openssl-devel\
  # todo: remove inotify-tools. More info: See https://github.com/operator-framework/operator-sdk/issues/2007
- && yum install -y https://rpmfind.net/linux/fedora/linux/releases/30/Everything/x86_64/os/Packages/i/inotify-tools-3.14-16.fc30.x86_64.rpm \
+ && yum install -y https://rpmfind.net/linux/fedora-secondary/releases/30/Everything/ppc64le/os/Packages/i/inotify-tools-3.14-16.fc30.ppc64le.rpm \
  && pip3 install --no-cache-dir --ignore-installed ipaddress \
       ansible-runner==1.3.4 \
       ansible-runner-http==1.0.0 \
       openshift==0.8.9 \
       ansible~=2.9 \
       jmespath \
- && yum remove -y gcc python36-devel \
+ && yum remove -y gcc python36-devel libffi-devel openssl-devel\
  && yum clean all \
  && rm -rf /var/cache/yum \
  && ansible-galaxy collection install operator_sdk.util
@@ -87,7 +87,7 @@ RUN mkdir -p ${HOME}/.ansible/tmp \
  && chown -R ${USER_UID}:0 ${HOME} \
  && chmod -R ug+rwx ${HOME}
 
-ADD https://github.com/krallin/tini/releases/latest/download/tini /tini
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini-ppc64el /tini
 RUN chmod +x /tini
 
 [[- if .Watches ]]
