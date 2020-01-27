@@ -16,6 +16,7 @@ package ansible
 
 import (
 	"path/filepath"
+	"runtime"
 
 	"github.com/operator-framework/operator-sdk/internal/scaffold"
 	"github.com/operator-framework/operator-sdk/internal/scaffold/input"
@@ -33,6 +34,9 @@ type DockerfileHybrid struct {
 
 	// Watches - if true, include a COPY statement for watches.yaml
 	Watches bool
+
+	// Arch - The architecture type of the image (e.g. amd64, s390x)
+	Arch string
 }
 
 // GetInput - gets the input
@@ -40,6 +44,10 @@ func (d *DockerfileHybrid) GetInput() (input.Input, error) {
 	if d.Path == "" {
 		d.Path = filepath.Join(scaffold.BuildDir, scaffold.DockerfileFile)
 	}
+	if d.Arch == "" {
+		d.Arch = runtime.GOARCH
+	}
+
 	d.TemplateBody = dockerFileHybridAnsibleTmpl
 	d.Delims = AnsibleDelims
 	return d.Input, nil
@@ -63,7 +71,7 @@ ENV OPERATOR=/usr/local/bin/ansible-operator \
 # yum clean all && rm -rf /var/yum/cache/* first
 RUN yum clean all && rm -rf /var/cache/yum/* \
  && yum -y update \
- && yum install -y python36-devel gcc python3-pip python3-setuptools \
+ && yum install -y python36-devel gcc python3-pip python3-setuptools libffi-devel openssl-devel\
  # todo: remove inotify-tools. More info: See https://github.com/operator-framework/operator-sdk/issues/2007
  && yum install -y https://rpmfind.net/linux/fedora/linux/releases/30/Everything/x86_64/os/Packages/i/inotify-tools-3.14-16.fc30.x86_64.rpm \
  && pip3 install --no-cache-dir --ignore-installed ipaddress \
@@ -72,7 +80,7 @@ RUN yum clean all && rm -rf /var/cache/yum/* \
       openshift==0.8.9 \
       ansible~=2.9 \
       jmespath \
- && yum remove -y gcc python36-devel \
+ && yum remove -y gcc python36-devel libffi-devel openssl-devel\
  && yum clean all \
  && rm -rf /var/cache/yum \
  && ansible-galaxy collection install operator_sdk.util
@@ -87,7 +95,7 @@ RUN mkdir -p ${HOME}/.ansible/tmp \
  && chown -R ${USER_UID}:0 ${HOME} \
  && chmod -R ug+rwx ${HOME}
 
-ADD https://github.com/krallin/tini/releases/latest/download/tini /tini
+ADD https://github.com/krallin/tini/releases/latest/download/tini-[[.Arch]] /tini
 RUN chmod +x /tini
 
 [[- if .Watches ]]
